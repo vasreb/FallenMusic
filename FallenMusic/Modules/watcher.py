@@ -67,27 +67,19 @@ async def swr_handler(_, chat_id: int):
 
 @pytgcalls.on_stream_end()
 async def on_stream_end(pytgcalls, update: Update):
-    chat_id = update.chat_id
-
-    get = fallendb.get(chat_id)
-    if not get:
-        try:
-            await _clear_(chat_id)
-            return await pytgcalls.leave_group_call(chat_id)
-        except:
-            return
-    else:
+           current_track = get[0]  # Сохраните текущий трек
         process = await app.send_message(
             chat_id=chat_id,
             text="» ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ɴᴇxᴛ ᴛʀᴀᴄᴋ ғʀᴏᴍ ᴏ̨ᴜᴇᴜᴇ...",
         )
-        title = get[0]["title"]
-        duration = get[0]["duration"]
-        file_path = get[0]["file_path"]
-        videoid = get[0]["videoid"]
-        req_by = get[0]["req"]
-        user_id = get[0]["user_id"]
-        get.pop(0)
+        title = current_track["title"]
+        duration = current_track["duration"]
+        file_path = current_track["file_path"]
+        videoid = current_track["videoid"]
+        req_by = current_track["req"]
+        user_id = current_track["user_id"]
+        # Не удаляем текущий трек из очереди, чтобы он повторялся
+        # get.pop(0)
 
         stream = AudioPiped(file_path, audio_parameters=HighQualityAudio())
 
